@@ -682,14 +682,27 @@ function playCustom() {
 function toggleFullscreen() {
   const iframe = document.querySelector('.modal-body iframe');
   const video = document.querySelector('.modal-body video');
-  const target = iframe || video || document.querySelector('.modal');
-  if (!target) return;
-  const req = target.requestFullscreen || target.webkitRequestFullscreen || target.msRequestFullscreen;
-  if (!document.fullscreenElement && req) {
-    try { req.call(target); } catch (e) { console.warn(e); }
-  } else if (document.exitFullscreen) {
-    document.exitFullscreen();
+  const modalEl = document.querySelector('.modal');
+  const tryTargets = [iframe, video, modalEl].filter(Boolean);
+  if (document.fullscreenElement) {
+    (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+    return;
   }
+  const attempt = (i) => {
+    if (i >= tryTargets.length) return;
+    const target = tryTargets[i];
+    const req = target.requestFullscreen || target.webkitRequestFullscreen || target.msRequestFullscreen;
+    if (!req) { attempt(i+1); return; }
+    try {
+      const p = req.call(target);
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => attempt(i+1));
+      }
+    } catch (e) {
+      attempt(i+1);
+    }
+  };
+  attempt(0);
 }
 function closePlayer() {
   state.player = null;
