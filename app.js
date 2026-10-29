@@ -629,7 +629,7 @@ function renderPlayer() {
   if (p.customMode) {
     body = `<video id="customVideo" controls autoplay playsinline style="width:100%;height:100%;background:#000;"></video>`;
   } else {
-    body = `<iframe src="${escapeHtml(prov.url)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="origin"></iframe>`;
+    body = `<iframe src="${escapeHtml(prov.url)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen webkitallowfullscreen mozallowfullscreen referrerpolicy="origin"></iframe>`;
   }
   modal.innerHTML = `
     <div class="modal-header">
