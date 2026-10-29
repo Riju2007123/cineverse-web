@@ -648,6 +648,7 @@ function renderPlayer() {
       ` : `
         <a href="${escapeHtml(prov.url)}" target="_blank" rel="noopener">Open ${escapeHtml(prov.name)} in new tab ↗</a>
       `}
+      <button class="btn ghost" onclick="App.toggleFullscreen()">Fullscreen</button>
     </div>
   `;
   if (p.customMode) {
@@ -678,6 +679,18 @@ function playCustom() {
     video.play().catch(()=>{});
   }
 }
+function toggleFullscreen() {
+  const iframe = document.querySelector('.modal-body iframe');
+  const video = document.querySelector('.modal-body video');
+  const target = iframe || video || document.querySelector('.modal');
+  if (!target) return;
+  const req = target.requestFullscreen || target.webkitRequestFullscreen || target.msRequestFullscreen;
+  if (!document.fullscreenElement && req) {
+    try { req.call(target); } catch (e) { console.warn(e); }
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
+}
 function closePlayer() {
   state.player = null;
   modal.classList.add('hidden');
@@ -695,7 +708,7 @@ const App = {
   setSearchFilter: (f) => { state.search.filter = f; renderSearch(); },
   submitSearch: (q) => { state.search.query = q; addSearch(q); state.search.recents = loadRecents(); doSearch(q); },
   setLibTab: (t) => { state.library.tab = t; renderLibrary(); },
-  closePlayer, setProvider, setCustomMode, playCustom,
+  closePlayer, setProvider, setCustomMode, playCustom, toggleFullscreen,
 };
 window.App = App;
 
